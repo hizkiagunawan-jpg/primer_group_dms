@@ -1,0 +1,6 @@
+{
+  "name": "Primer DMS - Accounting Voucher Archive",
+  "description": "Enterprise document management system (DMS) for accounting and financial records with AI extraction, side-by-side review, cross-document reconciliation, physical custody tracking, BigQuery ingestion, and immutable audit trails.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
