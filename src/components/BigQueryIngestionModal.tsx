@@ -242,19 +242,12 @@ export const BigQueryIngestionModal: React.FC<BigQueryIngestionModalProps> = ({
                 <h2 className="text-base font-bold text-slate-900">
                   BigQuery Staging & Cloud Storage Ingestion
                 </h2>
-                {isLive ? (
+                {isLive && (
                   <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-[10px] font-bold flex items-center gap-1">
                     <Cloud className="w-3 h-3 text-emerald-600" /> LIVE GCP
                   </span>
-                ) : (
-                  <span className="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded-full text-[10px] font-bold flex items-center gap-1">
-                    <Server className="w-3 h-3 text-amber-700" /> SANDBOX PREFLIGHT
-                  </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Multi-table data warehousing & WORM archival for accounting voucher packets
-              </p>
             </div>
           </div>
 
@@ -266,26 +259,15 @@ export const BigQueryIngestionModal: React.FC<BigQueryIngestionModalProps> = ({
           </button>
         </div>
 
-        {/* Live GCP vs Sandbox Status Banner */}
-        <div className={`px-6 py-2.5 border-b text-xs flex items-start gap-2.5 ${
-          isLive ? "bg-emerald-50/70 border-emerald-200 text-emerald-900" : "bg-amber-50/80 border-amber-200 text-amber-900"
-        }`}>
-          {isLive ? (
-            <>
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-              <div className="leading-snug">
-                <span className="font-semibold">Connected to Google Cloud Platform:</span> Project <code className="bg-white/80 px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-[11px]">{gcpStatus?.projectId}</code> | Dataset <code className="bg-white/80 px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-[11px]">{gcpStatus?.datasetId}</code> | Bucket <code className="bg-white/80 px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-[11px]">gs://{gcpStatus?.bucketName}</code>
-              </div>
-            </>
-          ) : (
-            <>
-              <Info className="w-4 h-4 text-amber-700 mt-0.5 flex-shrink-0" />
-              <div className="leading-snug">
-                <span className="font-bold">Sandbox Preflight Mode:</span> No live GCP credentials detected in environment variables. Running ingestion performs 100% authentic schema validation and financial rules locally. To stream to your actual Google Cloud project, configure <code className="bg-white/90 px-1 py-0.5 rounded border border-amber-300 font-mono text-[11px]">GCP_PROJECT_ID</code> in Settings or check the <strong>GCP Setup & DDL</strong> tab.
-              </div>
-            </>
-          )}
-        </div>
+        {/* Live GCP Status Banner */}
+        {isLive && (
+          <div className="px-6 py-2.5 border-b text-xs flex items-start gap-2.5 bg-emerald-50/70 border-emerald-200 text-emerald-900">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+            <div className="leading-snug">
+              <span className="font-semibold">Connected to Google Cloud Platform:</span> Project <code className="bg-white/80 px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-[11px]">{gcpStatus?.projectId}</code> | Dataset <code className="bg-white/80 px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-[11px]">{gcpStatus?.datasetId}</code> | Bucket <code className="bg-white/80 px-1.5 py-0.5 rounded border border-emerald-300 font-mono text-[11px]">gs://{gcpStatus?.bucketName}</code>
+            </div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="px-6 bg-slate-50/70 border-b border-slate-200 flex space-x-6 text-xs font-semibold">
@@ -417,13 +399,20 @@ export const BigQueryIngestionModal: React.FC<BigQueryIngestionModalProps> = ({
               {/* Ingestion Completed Result */}
               {ingestionResult && !ingesting && (
                 <div className={`p-4.5 rounded-xl border space-y-2.5 animate-fadeIn ${
-                  ingestionResult.mode === "LIVE_GCP"
+                  ingestionResult.liveError
+                    ? "bg-red-50 border-red-200 text-red-900"
+                    : ingestionResult.mode === "LIVE_GCP"
                     ? "bg-emerald-50 border-emerald-200 text-emerald-900"
                     : "bg-slate-50 border-slate-300 text-slate-800"
                 }`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 font-bold text-sm">
-                      {ingestionResult.mode === "LIVE_GCP" ? (
+                      {ingestionResult.liveError ? (
+                        <>
+                          <AlertTriangle className="w-5 h-5 text-red-600" />
+                          <span>Google Cloud Platform Streaming Failed</span>
+                        </>
+                      ) : ingestionResult.mode === "LIVE_GCP" ? (
                         <>
                           <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                           <span>Successfully Ingested to Live BigQuery & Cloud Storage</span>
@@ -440,9 +429,15 @@ export const BigQueryIngestionModal: React.FC<BigQueryIngestionModalProps> = ({
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {ingestionResult.notice}
-                  </p>
+                  {ingestionResult.liveError ? (
+                    <div className="text-xs text-red-800 bg-red-100/50 p-2.5 rounded border border-red-200 font-mono overflow-auto max-h-40">
+                      <strong>GCP API Error:</strong> {ingestionResult.liveError}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {ingestionResult.notice}
+                    </p>
+                  )}
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2 border-t border-slate-200">
                     <div>
@@ -459,8 +454,11 @@ export const BigQueryIngestionModal: React.FC<BigQueryIngestionModalProps> = ({
                     </div>
                     <div>
                       <span className="text-slate-500 block text-[10px]">STATUS</span>
-                      <strong className={`font-bold ${ingestionResult.mode === "LIVE_GCP" ? "text-emerald-700" : "text-blue-700"}`}>
-                        {ingestionResult.status}
+                      <strong className={`font-bold ${
+                        ingestionResult.liveError ? "text-red-700" :
+                        ingestionResult.mode === "LIVE_GCP" ? "text-emerald-700" : "text-blue-700"
+                      }`}>
+                        {ingestionResult.liveError ? "GCP_API_ERROR" : ingestionResult.status}
                       </strong>
                     </div>
                   </div>
@@ -577,6 +575,18 @@ export const BigQueryIngestionModal: React.FC<BigQueryIngestionModalProps> = ({
                     <p className="text-[11px] text-rose-700 leading-relaxed">
                       The current value for <code className="font-mono bg-white px-1 py-0.5 rounded border border-rose-300">GCP_SERVICE_ACCOUNT_KEY</code> in Settings appears to be a 40-character token/hash rather than a Google Cloud Service Account Key JSON.
                       To authenticate directly to BigQuery and Cloud Storage without API enablement errors, paste the full downloaded service account JSON file contents (containing <code className="font-mono">client_email</code> and <code className="font-mono">private_key</code>).
+                    </p>
+                  </div>
+                )}
+
+                {gcpStatus?.bigquery?.error && (
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 space-y-1">
+                    <div className="font-bold flex items-center gap-1.5 text-amber-800">
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                      BigQuery API Connection Error
+                    </div>
+                    <p className="font-mono text-[11px] bg-white p-2 rounded border border-amber-100 overflow-auto max-h-24">
+                      {gcpStatus.bigquery.error}
                     </p>
                   </div>
                 )}

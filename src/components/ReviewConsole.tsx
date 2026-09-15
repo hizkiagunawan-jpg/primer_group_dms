@@ -2292,12 +2292,12 @@ export const ReviewConsole: React.FC<ReviewConsoleProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2 shrink-0 max-w-full">
             <button
               onClick={() => onSelectPage(Math.max(1, page.page_no - 1))}
               disabled={page.page_no === 1}
-              className="p-2 border border-slate-300 rounded bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-40"
+              className="p-2 border border-slate-300 rounded bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-40 shrink-0"
               title="Previous Page"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -2305,37 +2305,37 @@ export const ReviewConsole: React.FC<ReviewConsoleProps> = ({
             <button
               onClick={() => onSelectPage(Math.min(totalPages, page.page_no + 1))}
               disabled={page.page_no >= totalPages}
-              className="p-2 border border-slate-300 rounded bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-40"
+              className="p-2 border border-slate-300 rounded bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-40 shrink-0"
               title="Next Page"
             >
               <ArrowRight className="w-4 h-4" />
             </button>
-            <span className="text-xs text-slate-700 font-semibold truncate max-w-[280px]" title={page.title}>{page.title}</span>
+            <span className="text-xs text-slate-700 font-semibold truncate" title={page.title}>{page.title}</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <button
               onClick={handleQuarantine}
-              className="px-3 py-2 bg-white border border-amber-300 text-amber-800 hover:bg-amber-50 rounded text-xs font-semibold cursor-pointer"
+              className="px-3 py-2 bg-white border border-amber-300 text-amber-800 hover:bg-amber-50 rounded text-xs font-semibold cursor-pointer shrink-0"
             >
               Flag
             </button>
             <button
               onClick={handleApprove}
-              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
               title="Save modifications to extracted data"
             >
               <Save className="w-3.5 h-3.5" />
-              Save Modifications
+              <span className="whitespace-nowrap">Save Modifications</span>
             </button>
             {onOpenBigQueryModal && (
               <button
                 onClick={onOpenBigQueryModal}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
                 title="Execute document load to BigQuery and Cloud Storage"
               >
-                <Database className="w-4 h-4" />
-                Execute Document Load
+                <Database className="w-4 h-4 shrink-0" />
+                <span className="whitespace-nowrap">Execute Document Load</span>
               </button>
             )}
           </div>

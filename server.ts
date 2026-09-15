@@ -1417,7 +1417,7 @@ gcloud storage buckets update gs://${bucketName} --retention-period=10y`;
         isLiveGcp = true;
         liveJobId = `bq-live-${Date.now()}-${crypto.randomBytes(3).toString("hex")}`;
       } catch (err: any) {
-        console.error("Live BigQuery streaming insertion error:", err);
+        console.warn("Live BigQuery streaming insertion warning:", err?.message || err);
         liveError = err?.message || "Error streaming into live BigQuery";
       }
     }
@@ -1546,7 +1546,7 @@ gcloud storage buckets update gs://${bucketName} --retention-period=10y`;
         note: "Streaming buffer rows are instantly available for SQL queries in BigQuery. Note that the GCP Console 'Preview' tab may take up to 90 minutes to display streaming buffer data.",
       });
     } catch (err: any) {
-      console.error(`BigQuery live table query error (${table}):`, err);
+      console.warn(`BigQuery live table query warning (${table}):`, err?.message || err);
       res.status(500).json({
         success: false,
         error: err?.message || "Failed to query BigQuery table",
